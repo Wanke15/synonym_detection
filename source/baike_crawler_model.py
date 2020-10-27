@@ -86,7 +86,7 @@ def baike_search(params):
         info_box_dict = get_info_box(soup)
         item_json.update(info_box_dict)
 
-        synonym_list = get_synonym(item_json)
+        synonym_list = get_synonym_v2(item_json)
         if len(synonym_list) > 0:
             write_line = word_code + '\t' + key_word + '\t' + '|'.join(synonym_list) + '\n'
             file.write(write_line)
@@ -103,6 +103,32 @@ def baike_search(params):
 def get_synonym(baike_json):
     info_key = ['别称', '英文名称', '又称', '英文别名', '西医学名']
     pattern_list = ['俗称', '简称', '又称']
+
+    info_set = set()
+    for key in info_key:
+        if key in baike_json:
+            value = baike_json[key]
+            if value[-1] == '等':
+                value = value[:-1]
+            value = seg(value)
+            info_set = info_set | set(value)
+
+    description = baike_json['description']
+    for p in pattern_list:
+        pattern = r'' + p
+        result = re_match(pattern, description)
+        for r in result:
+            value = seg(r)
+            info_set = info_set | set(value)
+
+    info_set = [s.strip().replace(u'\xa0', '').replace('"', '').replace('“', '').replace('”', '').
+                    replace('（', '').replace('：', '')   for s in info_set]
+    return info_set
+
+
+def get_synonym_v2(baike_json):
+    info_key = ['别称', '英文名称', '又称', '英文别名', '西医学名', '别名']
+    pattern_list = ['俗称', '简称', '又称', '昵称']
 
     info_set = set()
     for key in info_key:
