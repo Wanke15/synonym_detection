@@ -128,7 +128,7 @@ def get_synonym(baike_json):
 
 def get_synonym_v2(baike_json):
     info_key = ['别称', '英文名称', '又称', '英文别名', '西医学名', '别名']
-    pattern_list = ['俗称', '简称', '又称', '昵称']
+    pattern_list = ['俗称', '简称', '又称', '昵称', '称作', '称为']
 
     info_set = set()
     for key in info_key:
